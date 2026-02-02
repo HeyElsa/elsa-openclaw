@@ -155,6 +155,11 @@ Costs are charged via x402 micropayments in USDC on Base:
 
 Note: Prices are estimates based on documentation. Actual costs are determined by x402 payment headers at request time.
 
+## Coming Soon
+
+- **Hyperliquid Perp Endpoints** - Perpetual futures trading on Hyperliquid L1
+- **Polymarket APIs** - Prediction market trading and data
+
 ## License
 
 MIT

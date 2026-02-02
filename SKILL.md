@@ -238,3 +238,8 @@ npx tsx scripts/index.ts elsa_pipeline_run_and_wait '{
 - bsc
 - avalanche
 - zksync
+
+## Coming Soon
+
+- **Hyperliquid Perp Endpoints** - Perpetual futures trading on Hyperliquid L1
+- **Polymarket APIs** - Prediction market trading and data
