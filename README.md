@@ -34,7 +34,7 @@ When `ELSA_ENABLE_EXECUTION_TOOLS=true`:
 
 ## Installation
 
-### 1. Clone the repository
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/HeyElsa/elsa-openclaw.git
@@ -44,31 +44,18 @@ npm install
 
 ### 2. Configure OpenClaw
 
-Add the repository path to your OpenClaw configuration:
+Edit `~/.openclaw/openclaw.json`:
 
 ```json
 {
   "skills": {
     "load": {
-      "extraDirs": [
-        "/path/to/elsa-openclaw"
-      ]
+      "extraDirs": ["/path/to/elsa-openclaw"]
     },
     "entries": {
       "openclaw-elsa-x402": {
         "env": {
-          "PAYMENT_PRIVATE_KEY": "0x...",
-          "TRADE_PRIVATE_KEY": "0x...",
-          "BASE_RPC_URL": "https://mainnet.base.org",
-          "ELSA_API_URL": "https://x402-api.heyelsa.ai",
-          "ELSA_MAX_USD_PER_CALL": "0.05",
-          "ELSA_MAX_USD_PER_DAY": "2.00",
-          "ELSA_MAX_CALLS_PER_MINUTE": "30",
-          "ELSA_TZ": "UTC",
-          "ELSA_ENABLE_EXECUTION_TOOLS": "false",
-          "ELSA_REQUIRE_CONFIRMATION_TOKEN": "true",
-          "ELSA_CONFIRMATION_TTL_SECONDS": "600",
-          "LOG_LEVEL": "info"
+          "PAYMENT_PRIVATE_KEY": "0x_YOUR_WALLET_PRIVATE_KEY"
         }
       }
     }
@@ -76,11 +63,48 @@ Add the repository path to your OpenClaw configuration:
 }
 ```
 
-> **Sandbox Note**: If you run OpenClaw in sandboxed mode (Docker), env vars won't inherit from the host. Set them via `agents.defaults.sandbox.docker.env` or per-agent config instead.
+**Minimal config** - only `PAYMENT_PRIVATE_KEY` is required. All other settings have sensible defaults.
+
+**With execution enabled** (for swaps):
+```json
+{
+  "skills": {
+    "load": {
+      "extraDirs": ["/path/to/elsa-openclaw"]
+    },
+    "entries": {
+      "openclaw-elsa-x402": {
+        "env": {
+          "PAYMENT_PRIVATE_KEY": "0x...",
+          "TRADE_PRIVATE_KEY": "0x...",
+          "ELSA_ENABLE_EXECUTION_TOOLS": "true"
+        }
+      }
+    }
+  }
+}
+```
 
 ### 3. Fund your payment wallet
 
-The payment wallet (PAYMENT_PRIVATE_KEY) needs USDC on Base to pay for API calls.
+The payment wallet needs USDC on Base to pay for API calls (~$0.01-0.05 per call).
+
+### 4. Restart OpenClaw
+
+The skill will load automatically. Verify with `/skills` in chat.
+
+## Usage in OpenClaw
+
+Once configured, just talk naturally:
+
+| You say | Tool used |
+|---------|-----------|
+| "What's the price of WETH?" | `elsa_get_token_price` |
+| "Search for PEPE token" | `elsa_search_token` |
+| "Show portfolio for 0xd8dA..." | `elsa_get_portfolio` |
+| "Get a quote to swap 10 USDC to WETH" | `elsa_get_swap_quote` |
+| "How much have I spent on Elsa API?" | `elsa_budget_status` |
+| "Swap 10 USDC to WETH on Base" | Full swap flow (with execution enabled) |
 
 ## Smoke Test
 
