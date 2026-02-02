@@ -6,10 +6,10 @@ import { z } from 'zod';
 
 const EnvSchema = z.object({
   // API Configuration
-  ELSA_BASE_URL: z
+  ELSA_API_URL: z
     .string()
     .url()
-    .default('https://x402-api.heyelsa.ai'),
+    .default('https://x402.heyelsa.ai'),
   BASE_RPC_URL: z
     .string()
     .url()

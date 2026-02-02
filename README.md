@@ -1,4 +1,4 @@
-# openclaw-elsa-x402
+# elsa-openclaw
 
 OpenClaw skill-pack for Elsa x402 DeFi API integration with micropayments.
 
@@ -38,7 +38,7 @@ When `ELSA_ENABLE_EXECUTION_TOOLS=true`:
 
 ```bash
 git clone https://github.com/HeyElsa/elsa-openclaw.git
-cd openclaw-elsa-x402
+cd elsa-openclaw
 npm install
 ```
 
@@ -51,7 +51,7 @@ Add the repository path to your OpenClaw configuration:
   "skills": {
     "load": {
       "extraDirs": [
-        "/path/to/openclaw-elsa-x402"
+        "/path/to/elsa-openclaw"
       ]
     },
     "entries": {
@@ -60,11 +60,11 @@ Add the repository path to your OpenClaw configuration:
           "PAYMENT_PRIVATE_KEY": "0x...",
           "TRADE_PRIVATE_KEY": "0x...",
           "BASE_RPC_URL": "https://mainnet.base.org",
-          "ELSA_BASE_URL": "https://x402-api.heyelsa.ai",
+          "ELSA_API_URL": "https://x402.heyelsa.ai",
           "ELSA_MAX_USD_PER_CALL": "0.05",
           "ELSA_MAX_USD_PER_DAY": "2.00",
           "ELSA_MAX_CALLS_PER_MINUTE": "30",
-          "ELSA_TZ": "UTC",
+          "ELSA_TZ": "Asia/Jakarta",
           "ELSA_ENABLE_EXECUTION_TOOLS": "false",
           "ELSA_REQUIRE_CONFIRMATION_TOKEN": "true",
           "ELSA_CONFIRMATION_TTL_SECONDS": "600",
@@ -76,12 +76,11 @@ Add the repository path to your OpenClaw configuration:
 }
 ```
 
+> **Sandbox Note**: If you run OpenClaw in sandboxed mode (Docker), env vars won't inherit from the host. Set them via `agents.defaults.sandbox.docker.env` or per-agent config instead.
+
 ### 3. Fund your payment wallet
 
-The payment wallet (PAYMENT_PRIVATE_KEY) needs USDC on Base to pay for API calls. Typical costs:
-- Search/price queries: $0.001-$0.005
-- Portfolio analysis: $0.01-$0.02
-- Swap execution: $0.02
+The payment wallet (PAYMENT_PRIVATE_KEY) needs USDC on Base to pay for API calls.
 
 ## Smoke Test
 
@@ -97,6 +96,8 @@ npx tsx scripts/index.ts elsa_get_portfolio '{"wallet_address": "0xd8dA6BF26964a
 # Check budget status
 npx tsx scripts/index.ts elsa_budget_status '{}'
 ```
+
+> **Field Mapping Note**: This skill uses `wallet_address` in tool inputs, which maps internally to Elsa API's `evm_address` field.
 
 Expected output includes:
 - `ok: true` for successful calls
@@ -126,11 +127,11 @@ Expected output includes:
 | `PAYMENT_PRIVATE_KEY` | Yes | - | Wallet for x402 API payments (hex with 0x prefix) |
 | `TRADE_PRIVATE_KEY` | No | PAYMENT_PRIVATE_KEY | Wallet for tx signing (recommend separate) |
 | `BASE_RPC_URL` | No | https://mainnet.base.org | Base RPC endpoint |
-| `ELSA_BASE_URL` | No | https://x402-api.heyelsa.ai | Elsa API base URL |
+| `ELSA_API_URL` | No | https://x402.heyelsa.ai | Elsa API base URL |
 | `ELSA_MAX_USD_PER_CALL` | No | 0.05 | Max USD per single API call |
 | `ELSA_MAX_USD_PER_DAY` | No | 2.00 | Max USD spend per day |
 | `ELSA_MAX_CALLS_PER_MINUTE` | No | 30 | Rate limit for API calls |
-| `ELSA_TZ` | No | UTC | Timezone for daily budget reset |
+| `ELSA_TZ` | No | UTC | Timezone for daily budget reset (e.g., "Asia/Jakarta") |
 | `ELSA_ENABLE_EXECUTION_TOOLS` | No | false | Enable onchain execution tools |
 | `ELSA_REQUIRE_CONFIRMATION_TOKEN` | No | true | Require dry-run before execution |
 | `ELSA_CONFIRMATION_TTL_SECONDS` | No | 600 | Token validity period |
@@ -139,21 +140,9 @@ Expected output includes:
 
 ## API Pricing
 
-Costs are charged via x402 micropayments in USDC on Base:
+Pricing may change. Actual costs are determined by x402 payment headers at request time.
 
-| Endpoint | Cost (USD) |
-|----------|------------|
-| /api/search_token | $0.001 |
-| /api/get_token_price | $0.002 |
-| /api/get_balances | $0.005 |
-| /api/get_portfolio | $0.01 |
-| /api/analyze_wallet | $0.02 |
-| /api/get_swap_quote | $0.01 |
-| /api/execute_swap | $0.02 |
-| /api/get_transaction_status | $0.005 |
-| /api/submit_transaction_hash | $0.005 |
-
-Note: Prices are estimates based on documentation. Actual costs are determined by x402 payment headers at request time.
+See current pricing at [x402.heyelsa.ai](https://x402.heyelsa.ai).
 
 ## Coming Soon
 

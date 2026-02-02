@@ -37,7 +37,7 @@ export function getX402Client(): AxiosInstance {
   const walletClient = getPaymentWalletClient();
 
   const baseAxios = axios.create({
-    baseURL: config.ELSA_BASE_URL,
+    baseURL: config.ELSA_API_URL,
     headers: { 'Content-Type': 'application/json' },
     timeout: 60_000,
   });
