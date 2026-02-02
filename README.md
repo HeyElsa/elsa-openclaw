@@ -37,7 +37,7 @@ When `ELSA_ENABLE_EXECUTION_TOOLS=true`:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-org/openclaw-elsa-x402.git
+git clone https://github.com/HeyElsa/elsa-openclaw.git
 cd openclaw-elsa-x402
 npm install
 ```
