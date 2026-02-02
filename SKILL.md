@@ -1,21 +1,7 @@
 ---
 name: openclaw-elsa-x402
-version: 1.0.0
-description: Elsa DeFi API tools with x402 micropayments for portfolio analysis, token search, and swap execution
-author: Elsa Team
-tags:
-  - defi
-  - trading
-  - portfolio
-  - x402
-  - base
-  - micropayments
-danger: |
-  EXECUTION TOOLS CAN PERFORM REAL ONCHAIN TRANSACTIONS.
-  - Execution is DISABLED by default (ELSA_ENABLE_EXECUTION_TOOLS=false)
-  - Even when enabled, dry-run confirmation is required by default
-  - Real funds may be at risk - use separate wallets for payments vs trading
-  - Never loop execution calls - always wait for user confirmation between swaps
+description: DeFi tools for portfolio analysis, token search, and swap execution via Elsa API with x402 micropayments
+metadata: {"openclaw":{"requires":{"env":["PAYMENT_PRIVATE_KEY"]},"primaryEnv":"PAYMENT_PRIVATE_KEY"}}
 ---
 
 # Elsa x402 DeFi Tools
