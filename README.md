@@ -60,7 +60,7 @@ Add the repository path to your OpenClaw configuration:
           "PAYMENT_PRIVATE_KEY": "0x...",
           "TRADE_PRIVATE_KEY": "0x...",
           "BASE_RPC_URL": "https://mainnet.base.org",
-          "ELSA_API_URL": "https://x402.heyelsa.ai",
+          "ELSA_API_URL": "https://x402-api.heyelsa.ai",
           "ELSA_MAX_USD_PER_CALL": "0.05",
           "ELSA_MAX_USD_PER_DAY": "2.00",
           "ELSA_MAX_CALLS_PER_MINUTE": "30",
@@ -127,7 +127,7 @@ Expected output includes:
 | `PAYMENT_PRIVATE_KEY` | Yes | - | Wallet for x402 API payments (hex with 0x prefix) |
 | `TRADE_PRIVATE_KEY` | No | PAYMENT_PRIVATE_KEY | Wallet for tx signing (recommend separate) |
 | `BASE_RPC_URL` | No | https://mainnet.base.org | Base RPC endpoint |
-| `ELSA_API_URL` | No | https://x402.heyelsa.ai | Elsa API base URL |
+| `ELSA_API_URL` | No | https://x402-api.heyelsa.ai | Elsa API base URL |
 | `ELSA_MAX_USD_PER_CALL` | No | 0.05 | Max USD per single API call |
 | `ELSA_MAX_USD_PER_DAY` | No | 2.00 | Max USD spend per day |
 | `ELSA_MAX_CALLS_PER_MINUTE` | No | 30 | Rate limit for API calls |

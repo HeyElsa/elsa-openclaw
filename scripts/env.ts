@@ -9,7 +9,7 @@ const EnvSchema = z.object({
   ELSA_API_URL: z
     .string()
     .url()
-    .default('https://x402.heyelsa.ai'),
+    .default('https://x402-api.heyelsa.ai'),
   BASE_RPC_URL: z
     .string()
     .url()
