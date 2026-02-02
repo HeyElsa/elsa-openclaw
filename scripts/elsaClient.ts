@@ -17,7 +17,7 @@ import type {
 
 export async function searchToken(query: string, limit: number = 10) {
   return callElsaApi<ElsaSearchTokenResponse>('/api/search_token', {
-    query,
+    symbol_or_address: query,
     limit,
   });
 }

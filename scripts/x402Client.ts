@@ -16,40 +16,39 @@ import type { BillingInfo, MetaInfo } from './types.js';
 let clientInstance: AxiosInstance | null = null;
 let paymentAddress: string | null = null;
 
-function getPaymentWalletClient() {
-  const config = getConfig();
-  const account = privateKeyToAccount(config.PAYMENT_PRIVATE_KEY as `0x${string}`);
-  paymentAddress = account.address;
-
-  return createWalletClient({
-    account,
-    chain: base,
-    transport: http(config.BASE_RPC_URL),
-  });
-}
-
 export function getX402Client(): AxiosInstance {
   if (clientInstance) {
     return clientInstance;
   }
 
   const config = getConfig();
-  const walletClient = getPaymentWalletClient();
 
+  // Create account from private key
+  const account = privateKeyToAccount(config.PAYMENT_PRIVATE_KEY as `0x${string}`);
+  paymentAddress = account.address;
+
+  // Create wallet client with Base mainnet
+  const walletClient = createWalletClient({
+    account,
+    chain: base,
+    transport: http(config.BASE_RPC_URL),
+  });
+
+  // Create base axios instance
   const baseAxios = axios.create({
     baseURL: config.ELSA_API_URL,
     headers: { 'Content-Type': 'application/json' },
-    timeout: 60_000,
+    timeout: 90_000,
   });
 
-  // Cast to any to handle x402-axios type compatibility with viem wallet client
+  // Wrap with x402 payment interceptor
   clientInstance = withPaymentInterceptor(baseAxios, walletClient as any);
   return clientInstance;
 }
 
 export function getPaymentAddress(): string {
   if (!paymentAddress) {
-    getPaymentWalletClient();
+    getX402Client(); // Initialize to get address
   }
   return paymentAddress!;
 }
@@ -90,8 +89,8 @@ export async function callElsaApi<T>(
     const billing: BillingInfo = {
       estimated_cost_usd: estimatedCost,
       payment_required: true,
-      receipt: null, // x402-axios handles payment automatically; receipt not easily accessible
-      protocol: 'x402-v1-compat',
+      receipt: null,
+      protocol: 'x402',
     };
 
     // Build meta info

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import 'dotenv/config';
 import { ZodError } from 'zod';
 import { getConfig, isExecutionEnabled, isConfirmationRequired } from './env.js';
 import { buildErrorResult, ExecutionDisabledError, ValidationError } from './errors.js';
