@@ -32,7 +32,7 @@ vi.mock('../env.js', () => ({
     ELSA_MAX_USD_PER_CALL: 0.05,
     ELSA_MAX_USD_PER_DAY: 2.00,
     ELSA_MAX_CALLS_PER_MINUTE: 30,
-    ELSA_TZ: 'Asia/Jakarta',
+    ELSA_TZ: 'UTC',
   }),
 }));
 

@@ -28,7 +28,7 @@ This skill provides access to the Elsa DeFi API for portfolio management, token 
 - Maximum $0.05 per API call (configurable)
 - Maximum $2.00 per day (configurable)
 - Maximum 30 calls per minute rate limit
-- Daily budget resets at midnight in configured timezone (default: Asia/Jakarta)
+- Daily budget resets at midnight in configured timezone (default: UTC)
 
 ### Required Confirmation Flow
 When execution tools are enabled:

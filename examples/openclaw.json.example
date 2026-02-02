@@ -15,7 +15,7 @@
           "ELSA_MAX_USD_PER_CALL": "0.05",
           "ELSA_MAX_USD_PER_DAY": "2.00",
           "ELSA_MAX_CALLS_PER_MINUTE": "30",
-          "ELSA_TZ": "Asia/Jakarta",
+          "ELSA_TZ": "UTC",
           "ELSA_ENABLE_EXECUTION_TOOLS": "false",
           "ELSA_REQUIRE_CONFIRMATION_TOKEN": "true",
           "ELSA_CONFIRMATION_TTL_SECONDS": "600",

@@ -42,7 +42,7 @@ const EnvSchema = z.object({
     .default('30'),
   ELSA_TZ: z
     .string()
-    .default('Asia/Jakarta'),
+    .default('UTC'),
 
   // Execution Gate
   ELSA_ENABLE_EXECUTION_TOOLS: z

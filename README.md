@@ -64,7 +64,7 @@ Add the repository path to your OpenClaw configuration:
           "ELSA_MAX_USD_PER_CALL": "0.05",
           "ELSA_MAX_USD_PER_DAY": "2.00",
           "ELSA_MAX_CALLS_PER_MINUTE": "30",
-          "ELSA_TZ": "Asia/Jakarta",
+          "ELSA_TZ": "UTC",
           "ELSA_ENABLE_EXECUTION_TOOLS": "false",
           "ELSA_REQUIRE_CONFIRMATION_TOKEN": "true",
           "ELSA_CONFIRMATION_TTL_SECONDS": "600",
@@ -130,7 +130,7 @@ Expected output includes:
 | `ELSA_MAX_USD_PER_CALL` | No | 0.05 | Max USD per single API call |
 | `ELSA_MAX_USD_PER_DAY` | No | 2.00 | Max USD spend per day |
 | `ELSA_MAX_CALLS_PER_MINUTE` | No | 30 | Rate limit for API calls |
-| `ELSA_TZ` | No | Asia/Jakarta | Timezone for daily budget reset |
+| `ELSA_TZ` | No | UTC | Timezone for daily budget reset |
 | `ELSA_ENABLE_EXECUTION_TOOLS` | No | false | Enable onchain execution tools |
 | `ELSA_REQUIRE_CONFIRMATION_TOKEN` | No | true | Require dry-run before execution |
 | `ELSA_CONFIRMATION_TTL_SECONDS` | No | 600 | Token validity period |
