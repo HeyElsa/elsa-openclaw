@@ -68,16 +68,19 @@ export async function runPipelineAndWait(params: {
 
     logger.debug({ pipeline_id: params.pipeline_id, status: pipelineStatus.status }, 'Pipeline status');
 
-    // Process tasks
-    for (const task of pipelineStatus.tasks || []) {
+    // Process tasks - API returns tasks as 'status' array
+    const tasks = pipelineStatus.status || [];
+    for (const task of tasks) {
       const existingResult = taskResults.find((r) => r.task_id === task.task_id);
 
       if (task.status === 'sign_pending') {
-        // Task needs signing
+        // Task needs signing - use evm_tx_data from API
+        const rawTxData = task.evm_tx_data || task.tx_data;
+
         if (params.mode === 'external_signer') {
           // Return for external signing
           if (!existingResult || existingResult.status !== 'sign_pending') {
-            const txData = task.tx_data ? mapTransactionData(task.tx_data) : undefined;
+            const txData = rawTxData ? mapTransactionData(rawTxData) : undefined;
             taskResults.push({
               task_id: task.task_id,
               status: 'sign_pending',
@@ -86,7 +89,7 @@ export async function runPipelineAndWait(params: {
           }
         } else {
           // Local signing
-          if (!task.tx_data) {
+          if (!rawTxData) {
             throw new PipelineTaskError(
               'Task requires signing but no tx_data provided',
               { task_id: task.task_id, status: task.status }
@@ -96,7 +99,7 @@ export async function runPipelineAndWait(params: {
           logger.info({ task_id: task.task_id }, 'Signing and broadcasting transaction');
 
           try {
-            const txData = mapTransactionData(task.tx_data);
+            const txData = mapTransactionData(rawTxData);
             const walletClient = getTradeWalletClient();
 
             // Broadcast transaction
@@ -183,8 +186,11 @@ export async function runPipelineAndWait(params: {
       }
     }
 
-    // Check for terminal states
-    if (pipelineStatus.status === 'success') {
+    // Check for terminal states - derive from task statuses
+    const allTasksComplete = tasks.length > 0 && tasks.every(t => t.status === 'success');
+    const anyTaskFailed = tasks.some(t => t.status === 'failed' || t.status === 'abandoned');
+
+    if (allTasksComplete) {
       const meta: MetaInfo = {
         latency_ms: nowMs() - startTime,
         endpoint: '/api/get_transaction_status',
@@ -201,7 +207,7 @@ export async function runPipelineAndWait(params: {
       };
     }
 
-    if (pipelineStatus.status === 'failed' || pipelineStatus.status === 'abandoned') {
+    if (anyTaskFailed) {
       const meta: MetaInfo = {
         latency_ms: nowMs() - startTime,
         endpoint: '/api/get_transaction_status',

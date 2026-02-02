@@ -112,13 +112,26 @@ export type PipelineTaskStatus =
   | 'failed'
   | 'abandoned';
 
+export interface EvmTxData {
+  chain_id: string;
+  to: string;
+  value: string;
+  data: string;
+  gas: string;
+  from: string;
+}
+
 export interface PipelineTask {
   task_id: string;
   action_type: string;
   status: PipelineTaskStatus;
   description?: string;
+  task_description?: string;
+  short_description?: string;
   tx_hash?: string;
   tx_data?: TransactionData;
+  evm_tx_data?: EvmTxData;
+  log?: string | null;
 }
 
 export interface TransactionData {
@@ -282,8 +295,8 @@ export interface ElsaExecuteSwapResponse {
 
 export interface ElsaPipelineStatusResponse {
   pipeline_id: string;
-  status: PipelineTaskStatus;
-  tasks: PipelineTask[];
+  status: PipelineTask[];  // API returns tasks as 'status' array
+  timestamp?: string;
 }
 
 export interface ElsaSubmitTxHashResponse {
