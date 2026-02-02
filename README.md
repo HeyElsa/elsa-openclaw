@@ -108,17 +108,66 @@ Expected output includes:
 
 **WARNING**: Execution tools perform real onchain transactions.
 
+```bash
+# Required for x402 API payments
+PAYMENT_PRIVATE_KEY=0x...
+
+# Required for signing swap transactions (falls back to PAYMENT_PRIVATE_KEY if not set)
+TRADE_PRIVATE_KEY=0x...
+
+# Enable execution tools
+ELSA_ENABLE_EXECUTION_TOOLS=true
+```
+
 1. Set `ELSA_ENABLE_EXECUTION_TOOLS=true`
 2. Ensure `TRADE_PRIVATE_KEY` has sufficient funds for gas and swaps
-3. Recommended: Keep `ELSA_REQUIRE_CONFIRMATION_TOKEN=true`
+3. Recommended: Use separate wallets for payments vs. trading
 
-### Safe Execution Pattern
+### Recommended Swap Flow
 
-1. Always call `elsa_get_swap_quote` first to review terms
-2. Call `elsa_execute_swap_dry_run` to get a `confirmation_token`
-3. Review the dry-run output carefully
-4. Call `elsa_execute_swap_confirmed` with the `confirmation_token`
-5. Use `elsa_pipeline_run_and_wait` to complete signing and submission
+```
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────┐     ┌─────────────────────┐
+│ 1. Get Quote        │ ──▶ │ 2. Dry Run          │ ──▶ │ 3. Confirm  │ ──▶ │ 4. Execute Pipeline │
+│ elsa_get_swap_quote │     │ elsa_execute_swap_  │     │ [User says  │     │ elsa_pipeline_run_  │
+│                     │     │ dry_run             │     │  "yes"]     │     │ and_wait            │
+└─────────────────────┘     └─────────────────────┘     └─────────────┘     └─────────────────────┘
+```
+
+**Step 1: Get Quote** - Show user what they'll receive
+```bash
+npx tsx scripts/index.ts elsa_get_swap_quote '{
+  "from_chain": "base", "from_token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "from_amount": "10", "to_chain": "base", "to_token": "0x4200000000000000000000000000000000000006",
+  "wallet_address": "0x...", "slippage": 0.5
+}'
+```
+
+**Step 2: Dry Run** - Create pipeline, get `pipeline_id`
+```bash
+npx tsx scripts/index.ts elsa_execute_swap_dry_run '{...same params...}'
+# Returns: { "pipeline_id": "abc-123", ... }
+```
+
+**Step 3: User Confirmation** - Present results and wait for explicit "yes"
+
+**Step 4: Execute Pipeline** - Sign and broadcast transactions
+```bash
+ELSA_ENABLE_EXECUTION_TOOLS=true npx tsx scripts/index.ts elsa_pipeline_run_and_wait '{
+  "pipeline_id": "abc-123",
+  "timeout_seconds": 180,
+  "poll_interval_seconds": 3,
+  "mode": "local_signer"
+}'
+# Automatically: signs approve tx → submits → signs swap tx → submits → returns tx hashes
+```
+
+### Critical Rules
+
+- **NEVER** execute swaps without showing the user the quote first
+- **NEVER** call execution tools in a loop
+- **NEVER** proceed if budget limits are exceeded
+- **ALWAYS** check `elsa_budget_status` if unsure about remaining budget
+- **ALWAYS** use dry-run mode first for any swap operation
 
 ## Environment Variables
 
@@ -143,6 +192,17 @@ Expected output includes:
 Pricing may change. Actual costs are determined by x402 payment headers at request time.
 
 See current pricing at [x402.heyelsa.ai](https://x402.heyelsa.ai).
+
+## Supported Chains
+
+- base (default)
+- ethereum
+- arbitrum
+- optimism
+- polygon
+- bsc
+- avalanche
+- zksync
 
 ## Coming Soon
 
