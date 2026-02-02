@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" alt="Elsa + OpenClaw" width="400">
+</p>
+
 # elsa-openclaw
 
 OpenClaw skill-pack for Elsa x402 DeFi API integration with micropayments.
