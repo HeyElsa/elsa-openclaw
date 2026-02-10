@@ -226,10 +226,14 @@ export interface ElsaSearchTokenResponse {
 export interface ElsaTokenPriceResponse {
   token_address: string;
   chain: string;
+  symbol?: string;
+  name?: string;
   price_usd: string;
+  decimals?: number;
   price_change_24h?: number;
   market_cap?: string;
   volume_24h?: string;
+  _fallback_used?: boolean;
 }
 
 export interface ElsaBalancesResponse {
