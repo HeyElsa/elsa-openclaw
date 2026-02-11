@@ -205,6 +205,56 @@ npx tsx scripts/index.ts elsa_budget_status '{}'
 
 ---
 
+#### elsa_get_limit_orders
+Get all limit orders for a wallet.
+
+```bash
+npx tsx scripts/index.ts elsa_get_limit_orders '{"wallet_address": "0x...", "chain": "base"}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address to query
+- `chain` (string, optional): Chain name (default: "base")
+
+**Output:**
+- `orders`: Array of limit orders with status, prices, and expiry
+
+---
+
+#### elsa_get_perp_positions
+Get perpetual positions for a wallet.
+
+```bash
+npx tsx scripts/index.ts elsa_get_perp_positions '{"wallet_address": "0x..."}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address to query
+
+**Output:**
+- `positions`: Array of open perp positions with PnL, leverage, and liquidation prices
+- `total_unrealized_pnl`: Sum of unrealized profits/losses
+- `total_margin`: Total margin used
+
+---
+
+#### elsa_get_transaction_history
+Get transaction history for a wallet.
+
+```bash
+npx tsx scripts/index.ts elsa_get_transaction_history '{"wallet_address": "0x...", "chain": "base", "limit": 20}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address to query
+- `chain` (string, optional): Filter by chain
+- `limit` (number, optional): Max results (default: 20, max: 100)
+
+**Output:**
+- `transactions`: Array of transactions with details, token transfers, and status
+
+---
+
 ### Execution Tools (Requires ELSA_ENABLE_EXECUTION_TOOLS=true)
 
 #### elsa_execute_swap_confirmed
@@ -259,6 +309,94 @@ npx tsx scripts/index.ts elsa_pipeline_run_and_wait '{
 - `local_signer`: Signs and broadcasts transactions using TRADE_PRIVATE_KEY
 - `external_signer`: Returns unsigned tx_data for external signing
 
+---
+
+#### elsa_create_limit_order
+Create a limit order to execute when price reaches target.
+
+```bash
+ELSA_ENABLE_EXECUTION_TOOLS=true npx tsx scripts/index.ts elsa_create_limit_order '{
+  "wallet_address": "0x...",
+  "chain": "base",
+  "from_token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "to_token": "0x4200000000000000000000000000000000000006",
+  "from_amount": "100",
+  "limit_price": "0.0004",
+  "expiry_hours": 24
+}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address
+- `chain` (string, required): Chain name
+- `from_token` (string, required): Token to sell
+- `to_token` (string, required): Token to buy
+- `from_amount` (string, required): Amount to sell
+- `limit_price` (string, required): Target price to trigger execution
+- `expiry_hours` (number, optional): Hours until order expires (default: 24, max: 720)
+
+---
+
+#### elsa_cancel_limit_order
+Cancel an existing limit order.
+
+```bash
+ELSA_ENABLE_EXECUTION_TOOLS=true npx tsx scripts/index.ts elsa_cancel_limit_order '{
+  "wallet_address": "0x...",
+  "order_id": "order_123",
+  "chain": "base"
+}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address
+- `order_id` (string, required): Order ID to cancel
+- `chain` (string, optional): Chain name (default: "base")
+
+---
+
+#### elsa_open_perp_position
+Open a perpetual futures position.
+
+```bash
+ELSA_ENABLE_EXECUTION_TOOLS=true npx tsx scripts/index.ts elsa_open_perp_position '{
+  "wallet_address": "0x...",
+  "market": "ETH-USD",
+  "side": "long",
+  "size_usd": "100",
+  "leverage": 5,
+  "take_profit": "4000",
+  "stop_loss": "2800"
+}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address
+- `market` (string, required): Market pair (e.g., "ETH-USD", "BTC-USD")
+- `side` (enum, required): "long" or "short"
+- `size_usd` (string, required): Position size in USD
+- `leverage` (number, optional): Leverage multiplier (default: 1, max: 100)
+- `take_profit` (string, optional): Take profit price
+- `stop_loss` (string, optional): Stop loss price
+
+---
+
+#### elsa_close_perp_position
+Close an open perpetual position.
+
+```bash
+ELSA_ENABLE_EXECUTION_TOOLS=true npx tsx scripts/index.ts elsa_close_perp_position '{
+  "wallet_address": "0x...",
+  "position_id": "pos_123",
+  "close_percentage": 100
+}'
+```
+
+**Input:**
+- `wallet_address` (string, required): Wallet address
+- `position_id` (string, required): Position ID to close
+- `close_percentage` (number, optional): Percentage to close (default: 100, range: 1-100)
+
 ## Supported Chains
 
 - base (default)
@@ -270,7 +408,26 @@ npx tsx scripts/index.ts elsa_pipeline_run_and_wait '{
 - avalanche
 - zksync
 
+## API Costs
+
+| Tool | Estimated Cost |
+|------|----------------|
+| elsa_search_token | $0.002 |
+| elsa_get_token_price | $0.002 |
+| elsa_get_balances | $0.002 |
+| elsa_get_portfolio | $0.002 |
+| elsa_analyze_wallet | $0.005 |
+| elsa_get_swap_quote | $0.002 |
+| elsa_execute_swap_dry_run | $0.005 |
+| elsa_get_limit_orders | $0.002 |
+| elsa_get_perp_positions | $0.002 |
+| elsa_get_transaction_history | $0.002 |
+| elsa_create_limit_order | $0.05 |
+| elsa_cancel_limit_order | $0.01 |
+| elsa_open_perp_position | $0.05 |
+| elsa_close_perp_position | $0.05 |
+| elsa_execute_swap_confirmed | $0.05 |
+
 ## Coming Soon
 
-- **Hyperliquid Perp Endpoints** - Perpetual futures trading on Hyperliquid L1
 - **Polymarket APIs** - Prediction market trading and data

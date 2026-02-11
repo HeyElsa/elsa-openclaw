@@ -10,6 +10,13 @@ import type {
   ElsaExecuteSwapResponse,
   ElsaPipelineStatusResponse,
   ElsaSubmitTxHashResponse,
+  ElsaGetLimitOrdersResponse,
+  ElsaCreateLimitOrderResponse,
+  ElsaCancelLimitOrderResponse,
+  ElsaGetPerpPositionsResponse,
+  ElsaOpenPerpPositionResponse,
+  ElsaClosePerpPositionResponse,
+  ElsaGetTransactionHistoryResponse,
 } from './types.js';
 
 // ============================================================================
@@ -141,5 +148,78 @@ export async function submitTransactionHash(taskId: string, txHash: string) {
   return callElsaApi<ElsaSubmitTxHashResponse>('/api/submit_transaction_hash', {
     task_id: taskId,
     tx_hash: txHash,
+  });
+}
+
+// ============================================================================
+// Limit Order Methods
+// ============================================================================
+
+export async function getLimitOrders(walletAddress: string, chain: string = 'base') {
+  return callElsaApi<ElsaGetLimitOrdersResponse>('/api/get_limit_orders', {
+    wallet_address: walletAddress,
+    chain,
+  });
+}
+
+export async function createLimitOrder(params: {
+  wallet_address: string;
+  chain: string;
+  from_token: string;
+  to_token: string;
+  from_amount: string;
+  limit_price: string;
+  expiry_hours: number;
+}) {
+  return callElsaApi<ElsaCreateLimitOrderResponse>('/api/create_limit_order', params);
+}
+
+export async function cancelLimitOrder(walletAddress: string, orderId: string, chain: string = 'base') {
+  return callElsaApi<ElsaCancelLimitOrderResponse>('/api/cancel_limit_order', {
+    wallet_address: walletAddress,
+    order_id: orderId,
+    chain,
+  });
+}
+
+// ============================================================================
+// Perpetuals Methods
+// ============================================================================
+
+export async function getPerpPositions(walletAddress: string) {
+  return callElsaApi<ElsaGetPerpPositionsResponse>('/api/get_perp_positions', {
+    wallet_address: walletAddress,
+  });
+}
+
+export async function openPerpPosition(params: {
+  wallet_address: string;
+  market: string;
+  side: 'long' | 'short';
+  size_usd: string;
+  leverage: number;
+  take_profit?: string;
+  stop_loss?: string;
+}) {
+  return callElsaApi<ElsaOpenPerpPositionResponse>('/api/open_perp_position', params);
+}
+
+export async function closePerpPosition(params: {
+  wallet_address: string;
+  position_id: string;
+  close_percentage: number;
+}) {
+  return callElsaApi<ElsaClosePerpPositionResponse>('/api/close_perp_position', params);
+}
+
+// ============================================================================
+// Transaction History Methods
+// ============================================================================
+
+export async function getTransactionHistory(walletAddress: string, chain?: string, limit: number = 20) {
+  return callElsaApi<ElsaGetTransactionHistoryResponse>('/api/get_transaction_history', {
+    wallet_address: walletAddress,
+    chain,
+    limit,
   });
 }

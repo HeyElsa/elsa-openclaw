@@ -22,6 +22,13 @@ import {
   PipelineSubmitTxHashInputSchema,
   PipelineRunAndWaitInputSchema,
   BudgetStatusInputSchema,
+  GetLimitOrdersInputSchema,
+  CreateLimitOrderInputSchema,
+  CancelLimitOrderInputSchema,
+  GetPerpPositionsInputSchema,
+  OpenPerpPositionInputSchema,
+  ClosePerpPositionInputSchema,
+  GetTransactionHistoryInputSchema,
 } from './types.js';
 import type { ToolHandler, ToolRegistry, ToolResult, BudgetStatus } from './types.js';
 
@@ -225,6 +232,75 @@ const MVP_TOOLS: ToolRegistry = {
       };
     },
   },
+
+  // -------------------------------------------------------------------------
+  // I) elsa_get_limit_orders
+  // -------------------------------------------------------------------------
+  elsa_get_limit_orders: {
+    validate: (args) => {
+      const result = GetLimitOrdersInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = GetLimitOrdersInputSchema.parse(args);
+      const result = await elsa.getLimitOrders(input.wallet_address, input.chain);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  // J) elsa_get_perp_positions
+  // -------------------------------------------------------------------------
+  elsa_get_perp_positions: {
+    validate: (args) => {
+      const result = GetPerpPositionsInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = GetPerpPositionsInputSchema.parse(args);
+      const result = await elsa.getPerpPositions(input.wallet_address);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  // K) elsa_get_transaction_history
+  // -------------------------------------------------------------------------
+  elsa_get_transaction_history: {
+    validate: (args) => {
+      const result = GetTransactionHistoryInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = GetTransactionHistoryInputSchema.parse(args);
+      const result = await elsa.getTransactionHistory(input.wallet_address, input.chain, input.limit);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
+    },
+  },
 };
 
 // ============================================================================
@@ -337,6 +413,98 @@ const EXECUTION_TOOLS: ToolRegistry = {
     run: async (args) => {
       const input = PipelineRunAndWaitInputSchema.parse(args);
       return runPipelineAndWait(input);
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  // M) elsa_create_limit_order
+  // -------------------------------------------------------------------------
+  elsa_create_limit_order: {
+    validate: (args) => {
+      const result = CreateLimitOrderInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = CreateLimitOrderInputSchema.parse(args);
+      const result = await elsa.createLimitOrder(input);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  // N) elsa_cancel_limit_order
+  // -------------------------------------------------------------------------
+  elsa_cancel_limit_order: {
+    validate: (args) => {
+      const result = CancelLimitOrderInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = CancelLimitOrderInputSchema.parse(args);
+      const result = await elsa.cancelLimitOrder(input.wallet_address, input.order_id, input.chain);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  // O) elsa_open_perp_position
+  // -------------------------------------------------------------------------
+  elsa_open_perp_position: {
+    validate: (args) => {
+      const result = OpenPerpPositionInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = OpenPerpPositionInputSchema.parse(args);
+      const result = await elsa.openPerpPosition(input);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  // P) elsa_close_perp_position
+  // -------------------------------------------------------------------------
+  elsa_close_perp_position: {
+    validate: (args) => {
+      const result = ClosePerpPositionInputSchema.safeParse(args);
+      if (!result.success) {
+        return result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('; ');
+      }
+      return null;
+    },
+    run: async (args) => {
+      const input = ClosePerpPositionInputSchema.parse(args);
+      const result = await elsa.closePerpPosition(input);
+      return {
+        ok: true,
+        data: result.data,
+        billing: result.billing,
+        meta: result.meta,
+      };
     },
   },
 };
